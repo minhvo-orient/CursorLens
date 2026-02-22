@@ -12,6 +12,9 @@
   <a href="http://www.lelekawaii.com/CursorLens/">
     <img src="https://img.shields.io/badge/Website-Landing%20Page-blue?logo=astro" alt="CursorLens Landing Page" />
   </a>
+  <a href="https://github.com/blueberrycongee/CursorLens/releases">
+    <img src="https://img.shields.io/github/downloads/blueberrycongee/CursorLens/total?logo=github&label=Downloads" alt="Total Downloads" />
+  </a>
 </p>
 
 # <p align="center">CursorLens</p>
