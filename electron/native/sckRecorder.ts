@@ -182,10 +182,12 @@ async function ensureHelperBinary(): Promise<string> {
   await fs.mkdir(path.dirname(helperPath), { recursive: true })
 
   await new Promise<void>((resolve, reject) => {
+    const arch = process.arch === 'arm64' ? 'arm64' : 'x86_64'
     const compile = spawn('xcrun', [
       'swiftc',
       '-parse-as-library',
       '-O',
+      '-target', `${arch}-apple-macos13.0`,
       sourcePath,
       '-framework', 'ScreenCaptureKit',
       '-framework', 'AVFoundation',
@@ -197,7 +199,6 @@ async function ensureHelperBinary(): Promise<string> {
     ], {
       cwd: projectRoot,
       stdio: ['ignore', 'pipe', 'pipe'],
-      env: { ...process.env, MACOSX_DEPLOYMENT_TARGET: '13.0' },
     })
 
     let stderr = ''

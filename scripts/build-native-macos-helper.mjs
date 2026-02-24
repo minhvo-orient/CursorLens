@@ -1,4 +1,5 @@
 import { mkdirSync, existsSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import process from 'node:process';
@@ -9,6 +10,8 @@ if (process.platform !== 'darwin') {
 }
 
 const projectRoot = process.cwd();
+const arch = os.arch() === 'arm64' ? 'arm64' : 'x86_64';
+const swiftTarget = `${arch}-apple-macos13.0`;
 const helperEntitlements = path.join(projectRoot, 'build/entitlements.native-helper.plist');
 const helperEntitlementsAV = path.join(projectRoot, 'build/entitlements.native-helper-av.plist');
 
@@ -68,18 +71,16 @@ for (const helper of helpers) {
     'swiftc',
     '-parse-as-library',
     '-O',
+    '-target', swiftTarget,
     helper.sourcePath,
     ...helper.frameworks.flatMap((framework) => ['-framework', framework]),
     '-o', helper.outputPath,
   ];
 
-  const buildEnv = { ...process.env, MACOSX_DEPLOYMENT_TARGET: '13.0' };
-
-  console.log(`[native-helper] compiling ${helper.label}...`);
+  console.log(`[native-helper] compiling ${helper.label} (target: ${swiftTarget})...`);
   const result = spawnSync('xcrun', args, {
     cwd: projectRoot,
     stdio: 'inherit',
-    env: buildEnv,
   });
 
   if (result.status !== 0) {
@@ -107,7 +108,6 @@ for (const helper of helpers) {
   ], {
     cwd: projectRoot,
     stdio: 'inherit',
-    env: buildEnv,
   });
 
   if (signResult.status !== 0) {
